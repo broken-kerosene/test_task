@@ -24,20 +24,24 @@ public:
 public slots:
     void reciveDatagrams();
     void showLogs();
+    void calcDataSpeed();
 
 private slots:
     void on_action_triggered();
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     QUdpSocket *socket;
     QTimer *timer;
 
-    int startid_, stopid_, count_;
-    int id_, m_, n_;
+    quint32 id_, startid_, stopid_;
+    int  count_, m_, n_;
     QDateTime time_;
     QVector<QVector<int> > matrix_;
+    double msg_size_;
 };
 #endif // MAINWINDOW_H

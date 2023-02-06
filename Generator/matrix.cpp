@@ -25,5 +25,3 @@ void matrix::printMatrix() const
         dbg << "\n";
     }
 }
-
-

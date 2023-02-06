@@ -38,13 +38,27 @@
       <property name="maximumSize">
        <size>
         <width>231</width>
-        <height>131</height>
+        <height>180</height>
        </size>
       </property>
       <property name="title">
-       <string/>
+       <string>control</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Disconnect</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QSpinBox" name="spinBox">
          <property name="maximum">
@@ -62,17 +76,10 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton">
+       <item row="4" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_3">
          <property name="text">
-          <string>Connect</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Disconnect</string>
+          <string>Clear logs</string>
          </property>
         </widget>
        </item>
@@ -91,7 +98,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>message size, Mbit</string>
+          <string>message size, bit</string>
          </property>
         </widget>
        </item>
@@ -115,6 +122,33 @@
          </property>
         </spacer>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>data speed, Mbit/s</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -126,12 +160,12 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>Меню</string>
+     <string>Menu</string>
     </property>
     <addaction name="action"/>
    </widget>
@@ -140,7 +174,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">
    <property name="text">
-    <string>Выход</string>
+    <string>Exit</string>
    </property>
   </action>
  </widget>

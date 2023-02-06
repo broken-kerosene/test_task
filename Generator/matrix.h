@@ -13,8 +13,6 @@ public:
     matrix(int n, int m);
     QVector<QVector<int> > getMatrix() const {return matrix_;};
     void printMatrix() const;
-
 };
-
 
 #endif // MATRIX_H

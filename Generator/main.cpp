@@ -1,16 +1,21 @@
 #include <QCoreApplication>
 #include <QString>
-#include <QTime>
+#include <QElapsedTimer>
+#include <QDebug>
 #include "matrix.h"
 #include "sendudp.h"
 
-void delay(int delMs)
-{
-    QTime dieTime= QTime::currentTime().addMSecs(delMs);
-    while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-}
 
+const int MBIT = 10e6;
+const int NANO = 1e9;
+
+void wait(int nsecs)
+{
+    QElapsedTimer timer;
+    timer.start();
+    while(timer.nsecsElapsed() < nsecs)
+        QCoreApplication::processEvents();
+}
 
 int main(int argc, char *argv[])
 {
@@ -21,16 +26,15 @@ int main(int argc, char *argv[])
     m = QString::fromLocal8Bit(*(argv+2)).toInt(&ok);
 
     SendUDP server;
-    QVector<QVector<int> > tmpmatrix;
-    ulong id = 0;
+    server.n = n;
+    server.m = m;
+    server.matrix = matrix(n, m).getMatrix();
+    server.makeMessage();
+    server.delay_ = double(server.getMessageSize())/double(MBIT) * NANO; //nsecs
+    //server.startTransmission();
     while(1){
-        matrix tmp_arr(n, m);
-        tmpmatrix = tmp_arr.getMatrix();
-        server.makeMessage(id, m, n, tmpmatrix);
         server.sendMessage();
-        qDebug() << "Message id: " << id;
-        delay(500);
-        id++;
+        wait(int(server.delay_));
     }
     return a.exec();
 }

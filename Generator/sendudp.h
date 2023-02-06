@@ -5,23 +5,32 @@
 #include <QUdpSocket>
 #include <QDateTime>
 #include <QDataStream>
+#include <QTimer>
 
 class SendUDP : public QObject
 {
     Q_OBJECT
 public:
     explicit SendUDP(QObject *parent = 0);
-    void makeMessage(int id, int m, int n, QVector<QVector<int> > matrix);
+    void startTransmission();
+    void makeMessage();
     void sendMessage();
     ulong getMessageSize() const;
-signals:
+
 
 public slots:
-    void reciveDatagrams();
+    void sendMessageSlot();
 
 private:
     QUdpSocket *socket;
+    QTimer *timer;
     QByteArray msg_;
+    quint32 id_;
+
+ public:
+    QVector<QVector<int> > matrix;
+    int n, m;
+    double delay_;
 
 };
 

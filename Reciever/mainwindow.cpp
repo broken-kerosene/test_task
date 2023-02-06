@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-const int TENSEC = 10000;
+const int TENMSSEC = 1e4;
+const int TENSEC = 10;
+const int MBIT = 1e6;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,9 +12,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     socket = new QUdpSocket(this);
     timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(showLogs()));
-    timer->start(TENSEC); //time specified in ms
+
+    timer->start(TENMSSEC); //time specified in ms
+    connect(timer, SIGNAL(timeout()), this, SLOT(calcDataSpeed()));
     startid_ = 0;
+    stopid_ = 0;
+    count_ = 0;
 }
 
 MainWindow::~MainWindow()
@@ -31,6 +36,7 @@ void MainWindow::on_pushButton_clicked()
     socket = new QUdpSocket(this);
     int port = ui->spinBox->value();
     socket->bind(QHostAddress::LocalHost, port);
+    connect(timer, SIGNAL(timeout()), this, SLOT(showLogs()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(reciveDatagrams()));
 }
 
@@ -42,11 +48,11 @@ void MainWindow::reciveDatagrams()
     while(socket->hasPendingDatagrams()){
         buffer.resize(socket->pendingDatagramSize());
         socket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
-        QString msg_size = QString::number(buffer.size()*8/1e6);
-        ui->label_3->setText(msg_size);
+        msg_size_ = buffer.size()*8;
+        ui->label_3->setText(QString::number(msg_size_));
         QDataStream in(buffer);
         in >> id_ >> time_ >> m_ >> n_ >> matrix_;
-        //cold start startid
+        //cold start startid_ issue
         if(startid_ == 0)
             startid_ = id_;
         QVector<QVector<int> > newMatrix = matrixTranspose();
@@ -58,6 +64,7 @@ void MainWindow::reciveDatagrams()
 void MainWindow::on_pushButton_2_clicked()
 {
     disconnect(socket, SIGNAL(readyRead()), this, SLOT(reciveDatagrams()));
+    disconnect(timer, SIGNAL(timeout()), this, SLOT(showLogs()));
     socket->close();
 }
 
@@ -77,11 +84,23 @@ QVector<QVector<int> > MainWindow::matrixTranspose() const
 void MainWindow::showLogs()
 {
     stopid_ = id_;
-    QString row = "Count of transpose: " + QString::number(count_);
+    QString row = "Count of transpose: " + QString::number(count_) + "\t";
     row.append("\tstart id: " + QString::number(startid_));
     row.append("\tstop id: " + QString::number(stopid_));
     ui->listWidget->addItem(row);
     ui->listWidget->scrollToBottom();
     count_ = 0;
     startid_ = id_;
+}
+void MainWindow::calcDataSpeed()
+{
+    double tmp;
+    tmp = count_ * msg_size_ /TENSEC/MBIT;
+    ui->label_5->setText(QString::number(tmp));
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    ui->listWidget->clear();
 }

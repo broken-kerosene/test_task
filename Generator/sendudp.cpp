@@ -1,39 +1,49 @@
 #include "sendudp.h"
 
+const int PORT = 6112;
 
 SendUDP::SendUDP(QObject *parent) :
     QObject(parent)
 {
     socket = new QUdpSocket(this);
-    socket->bind(6112);
-}
+    socket->bind(PORT);
 
+    timer = new QTimer(this);
+    delay_ = 1;
+     //time specified in ms
+    id_=0;
+}
 void SendUDP::sendMessage()
 {
-    socket->writeDatagram(msg_, QHostAddress::LocalHost, 6112);
+    makeMessage();
+    socket->writeDatagram(msg_, QHostAddress::LocalHost, PORT);
+    id_++;
 }
 
-void SendUDP::makeMessage(int id, int m, int n, QVector<QVector<int> > matrix)
+
+void SendUDP::sendMessageSlot()
 {
-    QDataStream out( &msg_, QIODevice::WriteOnly );
-    out << id << QDateTime::currentDateTime() << m << n << matrix;
+    makeMessage();
+    socket->writeDatagram(msg_, QHostAddress::LocalHost, PORT);
+    id_++;
 }
 
-void SendUDP::reciveDatagrams()
+void SendUDP::makeMessage()
 {
-    QByteArray buffer;
-    QHostAddress sender;
-    quint16 senderPort;
-
-    while(socket->hasPendingDatagrams()) {
-        buffer.resize(socket->pendingDatagramSize());
-        socket->readDatagram(buffer.data(), buffer.size(),
-                           &sender, &senderPort);
-    }
+    QDataStream out(&msg_, QIODevice::WriteOnly);
+    out << id_ << QDateTime::currentDateTime() << m << n << matrix;
 }
 
 ulong SendUDP::getMessageSize() const
 {
-    //in bits
-    return msg_.size()*8;
+    return msg_.size()*8; //in bits
 }
+
+void SendUDP::startTransmission()
+{
+    timer->start(delay_);
+    connect(timer, SIGNAL(timeout()), this, SLOT(sendMessageSlot()));
+}
+
+
+
