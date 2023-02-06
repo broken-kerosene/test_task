@@ -13,7 +13,7 @@ void wait(int nsecs)
 {
     QElapsedTimer timer;
     timer.start();
-    while(timer.nsecsElapsed() < nsecs)
+    while(timer.nsecsElapsed() < nsecs - nsecs/10)
         QCoreApplication::processEvents();
 }
 
@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     server.delay_ = double(server.getMessageSize())/double(MBIT) * NANO; //nsecs
     //server.startTransmission();
     while(1){
+        server.matrix = matrix(n, m).getMatrix();
         server.sendMessage();
         wait(int(server.delay_));
     }
